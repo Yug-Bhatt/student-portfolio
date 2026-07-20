@@ -1,18 +1,75 @@
-# React + Vite
+# Student Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple student portfolio website built using **React** and **Vite** as part of a college practical.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Single-page portfolio
+- Reusable React components
+- Header, About, Education, Skills, Projects, Certifications, Contact, and Footer sections
+- Props used to pass data between components
+- Clean and responsive layout
 
-## React Compiler
+## Technologies Used
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- React
+- Vite
+- JavaScript
+- CSS
 
-Note: This will impact Vite dev & build performances.
+## Project Structure
 
-## Expanding the ESLint configuration
+```
+student-portfolio/
+│── public/
+│── src/
+│   ├── components/
+│   │   ├── Header.jsx
+│   │   ├── About.jsx
+│   │   ├── Education.jsx
+│   │   ├── Skills.jsx
+│   │   ├── Projects.jsx
+│   │   ├── Certificates.jsx
+│   │   ├── Contact.jsx
+│   │   └── Footer.jsx
+│   ├── App.jsx
+│   ├── App.css
+│   ├── index.css
+│   └── main.jsx
+│── package.json
+│── vite.config.js
+│── README.md
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Getting Started
+
+1. Clone the repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/student-portfolio.git
+```
+
+2. Navigate to the project folder
+
+```bash
+cd student-portfolio
+```
+
+3. Install dependencies
+
+```bash
+npm install
+```
+
+4. Start the development server
+
+```bash
+npm run dev
+```
+
+## Author
+
+**Yug Bhatt**
+
+B.Tech Artificial Intelligence & Machine Learning  
+CHARUSAT University
