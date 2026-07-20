@@ -1,3 +1,4 @@
+/* Reset */
 * {
   margin: 0;
   padding: 0;
@@ -5,15 +6,28 @@
   font-family: Arial, sans-serif;
 }
 
-body {
+/* Light Mode */
+.light {
   background-color: #f4f4f4;
+  color: black;
+  min-height: 100vh;
 }
 
+/* Dark Mode */
+.dark {
+  background-color: #1f2937;
+  color: white;
+  min-height: 100vh;
+}
+
+/* Main Container */
 .container {
   width: 80%;
-  margin: 20px auto;
+  margin: auto;
+  padding: 20px 0;
 }
 
+/* Header */
 .header {
   background-color: #1e3a8a;
   color: white;
@@ -22,29 +36,93 @@ body {
   border-radius: 8px;
 }
 
+.header h1 {
+  margin-bottom: 10px;
+}
+
+.header p {
+  margin-bottom: 15px;
+}
+
+/* Navigation */
+nav {
+  margin-top: 15px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin: 0 15px;
+  font-weight: bold;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* Cards */
 .card {
-  background-color: white;
   margin-top: 20px;
   padding: 20px;
   border-radius: 8px;
+  transition: 0.3s;
+}
+
+/* Card Colors */
+.light .card {
+  background: white;
+  color: black;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
+.dark .card {
+  background: #374151;
+  color: white;
+  box-shadow: 0 2px 5px rgba(255,255,255,0.1);
+}
+
+/* Card Headings */
 .card h2 {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   color: #1e3a8a;
 }
 
-.card p,
-.card li {
-  margin-top: 8px;
+.dark .card h2 {
+  color: #93c5fd;
+}
+
+/* Paragraphs */
+.card p {
+  margin-bottom: 10px;
   line-height: 1.6;
 }
 
+/* Lists */
 .card ul {
   margin-left: 20px;
+  margin-top: 10px;
 }
 
+.card li {
+  margin-bottom: 8px;
+}
+
+/* Button */
+button {
+  padding: 10px 18px;
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+button:hover {
+  background-color: #163172;
+}
+
+/* Footer */
 .footer {
   background-color: #1e3a8a;
   color: white;
@@ -54,15 +132,24 @@ body {
   border-radius: 8px;
 }
 
-.card ul {
-  margin-top: 10px;
-  margin-left: 20px;
+/* Dark Mode Header/Footer */
+.dark .header,
+.dark .footer {
+  background-color: #111827;
 }
 
-.card li {
-  margin-bottom: 8px;
-}
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    width: 95%;
+  }
 
-.card p {
-  margin-bottom: 8px;
+  nav a {
+    display: inline-block;
+    margin: 8px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+  }
 }

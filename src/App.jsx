@@ -1,31 +1,44 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
 import "./App.css";
 
 import Header from "./components/Header";
-import About from "./components/About";
-import Education from "./components/Education";
-import Skills from "./components/Skills";
-import Projects from "./components/Projects";
-import Certificates from "./components/Certificates";
-import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 
+import Home from "./pages/Home";
+import AboutPage from "./pages/AboutPage";
+import ProjectsPage from "./pages/ProjectsPage";
+import ContactPage from "./pages/ContactPage";
+
 function App() {
+  const [darkMode, setDarkMode] = useState(false);
+
   return (
-    <div className="container">
-      <Header
-        name="Yug Bhatt"
-        course="B.Tech Artificial Intelligence & Machine Learning"
-      />
+    <BrowserRouter>
+      <div className={darkMode ? "dark" : "light"}>
+        <div className="container">
+          <Header
+            name="Yug Bhatt"
+            course="B.Tech Artificial Intelligence & Machine Learning"
+          />
 
-      <About />
-      <Education />
-      <Skills />
-      <Projects />
-      <Certificates />
-      <Contact />
+          <div className="toggle">
+            <button onClick={() => setDarkMode(!darkMode)}>
+              {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+            </button>
+          </div>
 
-      <Footer email="yugbhatt75@gmail.com" />
-    </div>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+          </Routes>
+
+          <Footer email="yugbhatt75@gmail.com" />
+        </div>
+      </div>
+    </BrowserRouter>
   );
 }
 
