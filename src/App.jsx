@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import AboutPage from "./pages/AboutPage";
 import ProjectsPage from "./pages/ProjectsPage";
 import ContactPage from "./pages/ContactPage";
+import TasksPage from "./pages/TasksPage";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -32,6 +33,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/tasks" element={<TasksPage />} />
             <Route path="/contact" element={<ContactPage />} />
           </Routes>
 

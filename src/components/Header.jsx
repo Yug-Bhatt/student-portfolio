@@ -19,6 +19,10 @@ function Header(props) {
           Projects
         </Link>
 
+        <Link to="/tasks" style={linkStyle}>
+          Tasks API
+        </Link>
+
         <Link to="/contact" style={linkStyle}>
           Contact
         </Link>

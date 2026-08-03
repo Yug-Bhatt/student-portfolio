@@ -13,7 +13,7 @@ function ProjectsPage() {
 
   useEffect(() => {
 
-    fetch("https://api.github.com/users/Yug-Bhat/repos")
+    fetch("https://api.github.com/users/Yug-Bhatt/repos")
 
       .then((response) => {
 
