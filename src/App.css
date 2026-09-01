@@ -533,3 +533,223 @@ body.dark-mode .empty-message {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================
+   Card Styles for Portfolio Pages
+========================= */
+
+.card {
+  width: 82%;
+  margin: 0 auto 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+body.dark-mode .card {
+  background: #1f2937;
+  color: #f9fafb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .card h2,
+body.dark-mode .card h3 {
+  color: #93c5fd;
+}
+
+/* =========================
+   Authentication Badge & Header Logout
+========================= */
+
+.auth-indicator-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 6px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.auth-user-info {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.header-logout-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background 0.2s ease;
+}
+
+.header-logout-btn:hover {
+  background: #dc2626;
+}
+
+/* =========================
+   Authentication Pages
+========================= */
+
+.auth-page {
+  width: 82%;
+  max-width: 480px;
+  margin: 20px auto 40px;
+}
+
+.auth-card {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #244293;
+}
+
+.auth-card h2 {
+  margin-top: 0;
+  margin-bottom: 6px;
+  text-align: center;
+  color: #244293;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: #555;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.auth-form .form-group {
+  margin-bottom: 18px;
+}
+
+.auth-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  color: #374151;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: #244293;
+}
+
+.auth-submit-btn {
+  width: 100%;
+  padding: 12px;
+  background: #244293;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+  background: #193577;
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.auth-link {
+  color: #244293;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.auth-link:hover {
+  color: #193577;
+}
+
+/* =========================
+   Dark Mode for Auth Components
+========================= */
+
+body.dark-mode .auth-card {
+  background: #1f2937;
+  color: #f9fafb;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  border-top-color: #60a5fa;
+}
+
+body.dark-mode .auth-card h2 {
+  color: #93c5fd;
+}
+
+body.dark-mode .auth-subtitle {
+  color: #9ca3af;
+}
+
+body.dark-mode .auth-form label {
+  color: #e5e7eb;
+}
+
+body.dark-mode .auth-form input {
+  background: #111827;
+  color: white;
+  border-color: #4b5563;
+}
+
+body.dark-mode .auth-form input:focus {
+  border-color: #60a5fa;
+}
+
+body.dark-mode .auth-submit-btn {
+  background: #2563eb;
+}
+
+body.dark-mode .auth-submit-btn:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+body.dark-mode .auth-footer {
+  color: #9ca3af;
+}
+
+body.dark-mode .auth-link {
+  color: #60a5fa;
+}
+
+@media (max-width: 700px) {
+  .auth-page,
+  .card {
+    width: 94%;
+  }
+}

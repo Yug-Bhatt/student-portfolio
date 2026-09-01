@@ -41,35 +41,49 @@ student-portfolio/
 │── README.md
 ```
 
+## Practical 7: Authentication & Middleware Pipeline
+
+Practical 7 extends the portfolio with a secure authentication and middleware pipeline:
+
+- **Bcrypt Password Hashing**: Passwords are never stored in plain text; hashed using `bcryptjs` (salt rounds: 10).
+- **User Registration (`POST /register`)**: Validates input, checks for unique email, hashes password, saves user with default `rollNo: "24AIML003"`, and returns HTTP 201.
+- **User Login (`POST /login`)**: Authenticates credentials and returns a signed JSON Web Token (JWT) expiring in 1 hour.
+- **Authentication Middleware (`authMiddleware.js`)**: Intercepts requests, validates `Authorization: Bearer <token>`, decodes payload safely with try/catch, attaches `req.user`, and rejects invalid/missing tokens with HTTP 401.
+- **Input Validation Middleware (`validationMiddleware.js`)**: Validates task inputs (title required, valid priority levels), returning HTTP 400 for invalid inputs.
+- **Protected Task API Routes**: All task endpoints (`GET /tasks`, `GET /tasks/:id`, `POST /tasks`, `PUT /tasks/:id`, `DELETE /tasks/:id`) require authentication.
+- **Frontend Authentication**:
+  - `RegisterPage.jsx` (`/register`) and `LoginPage.jsx` (`/login`) integrated with portfolio blue theme.
+  - `ProtectedRoute.jsx` redirects unauthenticated access from `/tasks` to `/login`.
+  - Visible Logout option and `🔐 Authenticated` status badge.
+  - Global HTTP 401 handling to automatically clear invalid/expired sessions and redirect to login.
+- **MongoDB Collections**: `student_portfolio` database contains:
+  - `tasks`: Existing task collection preserving all Practical 6 CRUD functionality.
+  - `users`: User credentials collection storing bcrypt password hashes and roll number `24AIML003`.
+
 ## Getting Started
 
-1. Clone the repository
+### 1. Backend Setup
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/student-portfolio.git
+cd backend
+npm install
+node server.js
 ```
 
-2. Navigate to the project folder
+Backend runs on `http://localhost:5000`.
 
-```bash
-cd student-portfolio
-```
-
-3. Install dependencies
+### 2. Frontend Setup
 
 ```bash
 npm install
-```
-
-4. Start the development server
-
-```bash
 npm run dev
 ```
 
+Frontend runs on `http://localhost:5173`.
+
 ## Author
 
-**Yug Bhatt**
-
+**Yug Bhatt**  
+Roll Number: **24AIML003**  
 B.Tech Artificial Intelligence & Machine Learning  
 CHARUSAT University
