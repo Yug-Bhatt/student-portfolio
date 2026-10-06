@@ -44,7 +44,7 @@ function ProjectsPage() {
   }, []);
 
   if (loading) {
-    return <Loading />;
+    return <Loading message="Loading Repositories..." />;
   }
 
   if (error) {
