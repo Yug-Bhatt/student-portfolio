@@ -10,6 +10,16 @@ const User = require("./models/User");
 const Task = require("./models/Task");
 const authMiddleware = require("./middleware/authMiddleware");
 const { validateTaskInput } = require("./middleware/validationMiddleware");
+const {
+  cache,
+  DEFAULT_TTL,
+  recordHit,
+  recordMiss,
+  getAllTasksKey,
+  getSingleTaskKey,
+  invalidateOnTaskWrite,
+  getStats,
+} = require("./cache");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -205,10 +215,23 @@ app.post("/login", async (req, res) => {
 // Protected Task Routes
 // =========================
 
-// GET /tasks - Fetch all tasks (Protected)
+// GET /tasks - Fetch all tasks (Protected with In-Memory Caching)
 app.get("/tasks", authMiddleware, async (req, res) => {
   try {
+    const userId = req.user ? (req.user.userId || req.user.id || req.user.email) : "default";
+    const cacheKey = getAllTasksKey(userId);
+
+    const cachedTasks = cache.get(cacheKey);
+    if (cachedTasks !== undefined) {
+      recordHit();
+      res.set("X-Cache", "HIT");
+      return res.status(200).json(cachedTasks);
+    }
+
+    recordMiss();
+    res.set("X-Cache", "MISS");
     const tasks = await Task.find().sort({ id: 1 });
+    cache.set(cacheKey, tasks, DEFAULT_TTL);
     res.status(200).json(tasks);
   } catch (error) {
     console.error("Error fetching tasks:", error);
@@ -218,11 +241,29 @@ app.get("/tasks", authMiddleware, async (req, res) => {
   }
 });
 
-// GET /tasks/:id - Fetch task by ID (Protected)
+// GET /tasks/:id - Fetch task by ID (Protected with In-Memory Caching)
 app.get("/tasks/:id", authMiddleware, async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(400).json({
+        error: "Validation failed",
+        message: "Invalid task ID",
+      });
+    }
 
+    const userId = req.user ? (req.user.userId || req.user.id || req.user.email) : "default";
+    const cacheKey = getSingleTaskKey(userId, id);
+
+    const cachedTask = cache.get(cacheKey);
+    if (cachedTask !== undefined) {
+      recordHit();
+      res.set("X-Cache", "HIT");
+      return res.status(200).json(cachedTask);
+    }
+
+    recordMiss();
+    res.set("X-Cache", "MISS");
     const task = await Task.findOne({ id: id });
 
     if (!task) {
@@ -231,6 +272,7 @@ app.get("/tasks/:id", authMiddleware, async (req, res) => {
       });
     }
 
+    cache.set(cacheKey, task, DEFAULT_TTL);
     res.status(200).json(task);
   } catch (error) {
     console.error("Error fetching task by ID:", error);
@@ -240,7 +282,7 @@ app.get("/tasks/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// POST /tasks - Create task (Protected + Input Validated)
+// POST /tasks - Create task (Protected + Input Validated + Cache Invalidation)
 app.post("/tasks", authMiddleware, validateTaskInput, async (req, res) => {
   try {
     const { title, description, priority } = req.body;
@@ -263,6 +305,9 @@ app.post("/tasks", authMiddleware, validateTaskInput, async (req, res) => {
       rollNo: "24AIML003",
     });
 
+    // Invalidate relevant cache only after successful database write
+    invalidateOnTaskWrite(newTask.id);
+
     res.status(201).json(newTask);
   } catch (error) {
     console.error("Error creating task:", error);
@@ -272,10 +317,16 @@ app.post("/tasks", authMiddleware, validateTaskInput, async (req, res) => {
   }
 });
 
-// PUT /tasks/:id - Update task (Protected + Input Validated)
+// PUT /tasks/:id - Update task (Protected + Input Validated + Cache Invalidation)
 app.put("/tasks/:id", authMiddleware, validateTaskInput, async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(400).json({
+        error: "Validation failed",
+        message: "Invalid task ID",
+      });
+    }
 
     const task = await Task.findOne({ id: id });
 
@@ -307,6 +358,9 @@ app.put("/tasks/:id", authMiddleware, validateTaskInput, async (req, res) => {
 
     await task.save();
 
+    // Invalidate relevant cache only after successful database write
+    invalidateOnTaskWrite(id);
+
     res.status(200).json(task);
   } catch (error) {
     console.error("Error updating task:", error);
@@ -316,10 +370,16 @@ app.put("/tasks/:id", authMiddleware, validateTaskInput, async (req, res) => {
   }
 });
 
-// DELETE /tasks/:id - Delete task (Protected)
+// DELETE /tasks/:id - Delete task (Protected + Cache Invalidation)
 app.delete("/tasks/:id", authMiddleware, async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(400).json({
+        error: "Validation failed",
+        message: "Invalid task ID",
+      });
+    }
 
     const task = await Task.findOneAndDelete({ id: id });
 
@@ -328,6 +388,9 @@ app.delete("/tasks/:id", authMiddleware, async (req, res) => {
         message: "Task not found",
       });
     }
+
+    // Invalidate relevant cache only after successful database write
+    invalidateOnTaskWrite(id);
 
     res.status(200).json({
       message: "Task deleted successfully",
@@ -338,6 +401,18 @@ app.delete("/tasks/:id", authMiddleware, async (req, res) => {
       error: "Failed to delete task",
     });
   }
+});
+
+// =========================
+// Cache Diagnostic Route (Practical 9)
+// =========================
+
+// GET /cache/stats - Retrieve in-memory cache metrics (Protected)
+app.get("/cache/stats", authMiddleware, (req, res) => {
+  res.status(200).json({
+    status: "success",
+    data: getStats(),
+  });
 });
 
 // =========================
