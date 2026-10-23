@@ -57,11 +57,32 @@ console.log = originalLog;
 console.log("✓ Test 4 Passed: task-deleted handler executed and logged successfully");
 
 // Test 5: Verify task-notification-error handling
-let errorCaught = false;
+let directErrorLogged = false;
+let interceptedErrorLogged = false;
+
+const originalConsoleError = console.error;
+console.error = (...args) => {
+  const msg = args.join(" ");
+  if (msg.includes("Simulated background error")) {
+    directErrorLogged = true;
+  }
+  if (msg.includes("Cannot read propert")) {
+    interceptedErrorLogged = true;
+  }
+  originalConsoleError.apply(console, args);
+};
+
+// 5a: Direct emission to error handler
 taskEvents.emit("task-notification-error", new Error("Simulated background error"));
-errorCaught = true;
-assert.strictEqual(errorCaught, true, "task-notification-error should handle errors safely");
-console.log("✓ Test 5 Passed: Custom task-notification-error event handles error without process termination");
+
+// 5b: Corrupt payload inside listener is caught and safely routed to task-notification-error
+taskEvents.emit("task-created", null);
+
+console.error = originalConsoleError;
+
+assert.strictEqual(directErrorLogged, true, "task-notification-error should handle errors safely");
+assert.strictEqual(interceptedErrorLogged, true, "Errors inside listeners must be safely caught and routed to task-notification-error");
+console.log("✓ Test 5 Passed: Custom task-notification-error handles errors without process termination");
 
 // Test 6: Verify task-created async timing (~2000ms delay)
 async function testTaskCreatedTiming() {
