@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node test-cache.js"
+    "test": "node test-cache.js && node test-events.js",
+    "test:cache": "node test-cache.js",
+    "test:events": "node test-events.js",
+    "test:integration": "node test-events-integration.js"
   },
   "keywords": [],
   "author": "",

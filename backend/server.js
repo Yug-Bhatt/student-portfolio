@@ -20,6 +20,8 @@ const {
   invalidateOnTaskWrite,
   getStats,
 } = require("./cache");
+const taskEvents = require("./events");
+require("./listeners");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -282,7 +284,7 @@ app.get("/tasks/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// POST /tasks - Create task (Protected + Input Validated + Cache Invalidation)
+// POST /tasks - Create task (Protected + Input Validated + Cache Invalidation + Event Emission)
 app.post("/tasks", authMiddleware, validateTaskInput, async (req, res) => {
   try {
     const { title, description, priority } = req.body;
@@ -308,7 +310,18 @@ app.post("/tasks", authMiddleware, validateTaskInput, async (req, res) => {
     // Invalidate relevant cache only after successful database write
     invalidateOnTaskWrite(newTask.id);
 
+    // Log API response timestamp and send immediate response
+    console.log(`[API] Response sent at ${new Date().toISOString()}`);
     res.status(201).json(newTask);
+
+    // Emit task-created asynchronously on next event loop tick
+    setImmediate(() => {
+      try {
+        taskEvents.emit("task-created", newTask);
+      } catch (err) {
+        taskEvents.emit("task-notification-error", err);
+      }
+    });
   } catch (error) {
     console.error("Error creating task:", error);
     res.status(500).json({
@@ -370,7 +383,7 @@ app.put("/tasks/:id", authMiddleware, validateTaskInput, async (req, res) => {
   }
 });
 
-// DELETE /tasks/:id - Delete task (Protected + Cache Invalidation)
+// DELETE /tasks/:id - Delete task (Protected + Cache Invalidation + Event Emission)
 app.delete("/tasks/:id", authMiddleware, async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
@@ -392,8 +405,19 @@ app.delete("/tasks/:id", authMiddleware, async (req, res) => {
     // Invalidate relevant cache only after successful database write
     invalidateOnTaskWrite(id);
 
+    // Log API delete response timestamp and send immediate response
+    console.log(`[API] Delete response sent at ${new Date().toISOString()}`);
     res.status(200).json({
       message: "Task deleted successfully",
+    });
+
+    // Emit task-deleted asynchronously on next event loop tick
+    setImmediate(() => {
+      try {
+        taskEvents.emit("task-deleted", task);
+      } catch (err) {
+        taskEvents.emit("task-notification-error", err);
+      }
     });
   } catch (error) {
     console.error("Error deleting task:", error);
