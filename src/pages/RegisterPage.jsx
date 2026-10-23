@@ -9,6 +9,7 @@ function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -67,10 +68,18 @@ function RegisterPage() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h2>Student Registration</h2>
-        <p className="auth-subtitle">
-          Create an account to access the Task Management system
-        </p>
+        <div style={{ textAlign: "center", marginBottom: "16px" }}>
+          <div
+            className="brand-badge"
+            style={{ width: "48px", height: "48px", margin: "0 auto 12px", fontSize: "18px" }}
+          >
+            YB
+          </div>
+          <h2>Create Student Account</h2>
+          <p className="auth-subtitle">
+            Register your credentials to manage MongoDB tasks with JWT security
+          </p>
+        </div>
 
         {error && <div className="error-message">⚠ {error}</div>}
         {successMessage && (
@@ -79,7 +88,7 @@ function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label htmlFor="reg-name">Full Name</label>
+            <label htmlFor="reg-name">Full Student Name</label>
             <input
               id="reg-name"
               type="text"
@@ -92,11 +101,11 @@ function RegisterPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="reg-email">Email Address</label>
+            <label htmlFor="reg-email">Student Email Address</label>
             <input
               id="reg-email"
               type="email"
-              placeholder="e.g. yug@example.com"
+              placeholder="e.g. 24aiml003@charusat.edu.in"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
@@ -105,11 +114,26 @@ function RegisterPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="reg-password">Password</label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <label htmlFor="reg-password">Password (min 6 characters)</label>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--cyan-bright)",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                }}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
             <input
               id="reg-password"
-              type="password"
-              placeholder="Minimum 6 characters"
+              type={showPassword ? "text" : "password"}
+              placeholder="Create a secure password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
@@ -121,8 +145,8 @@ function RegisterPage() {
             <label htmlFor="reg-confirm-password">Confirm Password</label>
             <input
               id="reg-confirm-password"
-              type="password"
-              placeholder="Re-enter password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Re-enter your password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               disabled={loading}
@@ -135,13 +159,13 @@ function RegisterPage() {
             className="auth-submit-btn"
             disabled={loading}
           >
-            {loading ? "Registering..." : "Register"}
+            {loading ? "Registering Account..." : "Complete Registration →"}
           </button>
         </form>
 
         <div className="auth-footer">
           <p>
-            Already have an account?{" "}
+            Already registered?{" "}
             <Link to="/login" className="auth-link">
               Login here
             </Link>

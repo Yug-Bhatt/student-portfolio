@@ -8,6 +8,7 @@ function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -61,20 +62,28 @@ function LoginPage() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h2>Student Login</h2>
-        <p className="auth-subtitle">
-          Sign in with your credentials to access Tasks API
-        </p>
+        <div style={{ textAlign: "center", marginBottom: "16px" }}>
+          <div
+            className="brand-badge"
+            style={{ width: "48px", height: "48px", margin: "0 auto 12px", fontSize: "18px" }}
+          >
+            YB
+          </div>
+          <h2>Student Portal Login</h2>
+          <p className="auth-subtitle">
+            Authenticate to access the protected Tasks API and database workspace
+          </p>
+        </div>
 
         {error && <div className="error-message">⚠ {error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label htmlFor="login-email">Email Address</label>
+            <label htmlFor="login-email">Academic / Student Email</label>
             <input
               id="login-email"
               type="email"
-              placeholder="e.g. yug@example.com"
+              placeholder="e.g. 24aiml003@charusat.edu.in"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
@@ -83,10 +92,25 @@ function LoginPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="login-password">Password</label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <label htmlFor="login-password">Password</label>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--cyan-bright)",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                }}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
             <input
               id="login-password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -100,13 +124,13 @@ function LoginPage() {
             className="auth-submit-btn"
             disabled={loading}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Authenticating with JWT..." : "Sign In to Account →"}
           </button>
         </form>
 
         <div className="auth-footer">
           <p>
-            Don't have an account?{" "}
+            Don&apos;t have an account yet?{" "}
             <Link to="/register" className="auth-link">
               Register here
             </Link>

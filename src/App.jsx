@@ -25,13 +25,18 @@ const LoginPage = lazy(() => import("./pages/LoginPage"));
 const RegisterPage = lazy(() => import("./pages/RegisterPage"));
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem("portfolio_theme");
+    return saved !== null ? saved === "dark" : true;
+  });
 
   useEffect(() => {
     if (darkMode) {
       document.body.classList.add("dark-mode");
+      localStorage.setItem("portfolio_theme", "dark");
     } else {
       document.body.classList.remove("dark-mode");
+      localStorage.setItem("portfolio_theme", "light");
     }
   }, [darkMode]);
 
@@ -42,16 +47,9 @@ function App() {
           <Header
             name="Yug Bhatt"
             course="B.Tech Artificial Intelligence & Machine Learning"
+            darkMode={darkMode}
+            onToggleDarkMode={() => setDarkMode(!darkMode)}
           />
-
-          <div className="toggle">
-            <button
-              className="dark-mode-btn"
-              onClick={() => setDarkMode(!darkMode)}
-            >
-              {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
-            </button>
-          </div>
 
           {/*
             React.Suspense:

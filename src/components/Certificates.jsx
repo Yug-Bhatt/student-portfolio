@@ -1,14 +1,49 @@
 function Certificates() {
-  return (
-    <section className="card">
-      <h2>Certifications</h2>
+  const certs = [
+    {
+      title: "NVIDIA AI Certificate",
+      issuer: "NVIDIA Deep Learning Institute",
+      icon: "🟢",
+    },
+    {
+      title: "Google AI Essentials",
+      issuer: "Google Career Certificates",
+      icon: "🔵",
+    },
+    {
+      title: "Google Cloud Fundamentals",
+      issuer: "Google Cloud Platform",
+      icon: "☁️",
+    },
+    {
+      title: "Neural Networks & Deep Learning",
+      issuer: "DeepLearning.AI",
+      icon: "🧠",
+    },
+  ];
 
-      <ul>
-        <li>NVIDIA AI Certificate</li>
-        <li>Google AI Essentials</li>
-        <li>Google Cloud Fundamentals</li>
-        <li>DeepLearning.AI - Neural Networks</li>
-      </ul>
+  return (
+    <section className="card" id="certificates">
+      <div className="section-header">
+        <span className="section-tag">Credentials</span>
+        <h2 className="section-title">Certifications</h2>
+      </div>
+
+      <div className="cert-grid">
+        {certs.map((c, i) => (
+          <div key={i} className="cert-card">
+            <div className="cert-badge-icon" aria-hidden="true">
+              {c.icon}
+            </div>
+            <div>
+              <div className="cert-title">{c.title}</div>
+              <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px" }}>
+                {c.issuer}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
