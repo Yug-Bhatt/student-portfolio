@@ -1,0 +1,90 @@
+name: Docker CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  docker-test:
+    name: Build and Test Docker Implementation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify Docker and Docker Compose availability
+        run: |
+          docker --version
+          docker compose version
+
+      - name: Validate Docker Compose file
+        run: docker compose config
+
+      - name: Build services with Docker Compose
+        run: docker compose build
+
+      - name: Start services with Docker Compose
+        run: docker compose up -d
+
+      - name: Wait for MongoDB and Backend healthchecks
+        run: |
+          echo "Waiting for MongoDB and Backend containers to reach healthy status..."
+          timeout=120
+          elapsed=0
+          interval=5
+          until [ "$(docker inspect --format='{{.State.Health.Status}}' student-portfolio-mongo 2>/dev/null)" = "healthy" ] && \
+                [ "$(docker inspect --format='{{.State.Health.Status}}' student-portfolio-backend 2>/dev/null)" = "healthy" ]; do
+            if [ $elapsed -ge $timeout ]; then
+              echo "Timeout reached (${timeout}s) waiting for containers to become healthy."
+              docker compose ps
+              exit 1
+            fi
+            echo "Elapsed: ${elapsed}s / ${timeout}s - Checking container health..."
+            docker compose ps
+            sleep $interval
+            elapsed=$((elapsed + interval))
+          done
+          echo "✓ Both MongoDB (student-portfolio-mongo) and Backend (student-portfolio-backend) are healthy!"
+          docker compose ps
+
+      - name: Verify Frontend HTTP response
+        run: |
+          echo "Waiting for Frontend (student-portfolio-frontend) on published port 3000..."
+          for i in {1..15}; do
+            if curl --fail --silent -I http://localhost:3000 >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+          echo "Testing Frontend HTTP response at http://localhost:3000..."
+          curl --fail --show-error -I http://localhost:3000
+          echo "Testing Frontend Nginx health endpoint at http://localhost:3000/health..."
+          frontend_health=$(curl --fail --show-error --silent http://localhost:3000/health)
+          echo "Frontend response: $frontend_health"
+          echo "$frontend_health" | grep -q "healthy"
+          echo "✓ Frontend published port 3000 and /health endpoint verified successfully"
+
+      - name: Verify Backend health endpoint
+        run: |
+          echo "Testing Backend health endpoint at http://localhost:5000/health..."
+          backend_response=$(curl --fail --show-error --silent http://localhost:5000/health)
+          echo "Backend response: $backend_response"
+          echo "$backend_response" | grep -q '"status":"ok"'
+          echo "✓ Backend health endpoint (port 5000, /health) verified successfully"
+
+      - name: Show container status and logs on failure
+        if: failure()
+        run: |
+          echo "=== Docker Compose Container Status (ps -a) ==="
+          docker compose ps -a
+          echo "=== Docker Compose Service Logs ==="
+          docker compose logs --tail=100
+
+      - name: Clean up Docker containers and volumes
+        if: always()
+        run: |
+          echo "Tearing down Docker containers, networks, and volumes..."
+          docker compose down -v --remove-orphans
