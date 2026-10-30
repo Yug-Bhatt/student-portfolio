@@ -1,3 +1,7 @@
+if (!globalThis.crypto) {
+  globalThis.crypto = require("crypto");
+}
+
 require("dotenv").config();
 
 const express = require("express");
@@ -22,6 +26,7 @@ const {
 } = require("./cache");
 const taskEvents = require("./events");
 require("./listeners");
+const { generateDescription } = require("./aiService");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -52,6 +57,17 @@ app.use(express.json());
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url} - ${new Date().toLocaleString()}`);
   next();
+});
+
+// =========================
+// Health Check Route (Practical 11 Docker Healthcheck)
+// =========================
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
 });
 
 // =========================
@@ -216,6 +232,36 @@ app.post("/login", async (req, res) => {
 // =========================
 // Protected Task Routes
 // =========================
+
+// POST /tasks/generate-description - AI Description Generation (Practical 13)
+app.post("/tasks/generate-description", authMiddleware, async (req, res) => {
+  try {
+    const { title } = req.body;
+
+    if (!title || typeof title !== "string" || !title.trim()) {
+      return res.status(400).json({
+        error: "Validation failed",
+        message: "Task title is required to generate description",
+      });
+    }
+
+    const result = await generateDescription(title);
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.code === "MISSING_API_KEY") {
+      return res.status(503).json({
+        error: "AI_SERVICE_UNAVAILABLE",
+        message: error.message,
+      });
+    }
+
+    console.error("AI Generation error:", error);
+    return res.status(502).json({
+      error: "AI_GENERATION_FAILED",
+      message: error.message || "Failed to generate task description with AI",
+    });
+  }
+});
 
 // GET /tasks - Fetch all tasks (Protected with In-Memory Caching)
 app.get("/tasks", authMiddleware, async (req, res) => {
@@ -464,6 +510,6 @@ app.use((err, req, res, next) => {
 // Start Server
 // =========================
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on http://0.0.0.0:${PORT}`);
 });

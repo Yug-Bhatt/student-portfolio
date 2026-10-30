@@ -4,6 +4,7 @@ import {
   createTask,
   updateTask,
   deleteTask,
+  generateTaskDescription,
 } from "../api";
 
 function TasksPage() {
@@ -19,6 +20,7 @@ function TasksPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -87,6 +89,30 @@ function TasksPage() {
       showMessage("Task created successfully!");
     } catch (err) {
       setError(err.message || "Failed to create task.");
+    }
+  };
+
+  // =========================
+  // AI Generate Description
+  // =========================
+  const handleGenerateDescription = async () => {
+    if (!title.trim()) {
+      setError("Please enter a task title first to generate an AI description.");
+      return;
+    }
+
+    try {
+      setAiLoading(true);
+      setError("");
+      const result = await generateTaskDescription(title);
+      if (result.description) {
+        setDescription(result.description);
+        showMessage("✨ AI description generated! You can edit it before saving.");
+      }
+    } catch (err) {
+      setError(err.message || "Failed to generate AI description.");
+    } finally {
+      setAiLoading(false);
     }
   };
 
@@ -280,9 +306,52 @@ function TasksPage() {
           onChange={(e) => setTitle(e.target.value)}
         />
 
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "8px",
+          }}
+        >
+          <label
+            style={{
+              fontSize: "12px",
+              color: "var(--text-muted)",
+              fontWeight: "600",
+            }}
+          >
+            Description
+          </label>
+          <button
+            type="button"
+            onClick={handleGenerateDescription}
+            disabled={aiLoading}
+            style={{
+              padding: "5px 12px",
+              fontSize: "12px",
+              fontWeight: "600",
+              background: aiLoading
+                ? "var(--bg-card)"
+                : "rgba(56, 189, 248, 0.12)",
+              color: "var(--cyan-bright)",
+              border: "1px solid rgba(56, 189, 248, 0.3)",
+              borderRadius: "var(--radius-full)",
+              cursor: aiLoading ? "not-allowed" : "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              boxShadow: "none",
+              margin: 0,
+            }}
+          >
+            {aiLoading ? "✨ Generating..." : "✨ Auto-Generate with AI"}
+          </button>
+        </div>
+
         <textarea
           rows="4"
-          placeholder="Detailed task description and requirements..."
+          placeholder="Detailed task description and requirements (or auto-generate with AI)..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />

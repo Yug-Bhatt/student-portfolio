@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 // Reusable helper for Authorization headers
 export const getAuthHeaders = () => {
@@ -166,4 +166,21 @@ export const deleteTask = async (id) => {
   }
 
   return response.json();
+};
+
+export const generateTaskDescription = async (title) => {
+  const response = await fetch(`${API_URL}/tasks/generate-description`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ title }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    handleAuthError(response);
+    throw new Error(data.message || "Failed to generate AI description");
+  }
+
+  return data;
 };
