@@ -2,7 +2,7 @@
 # Backend Dockerfile (Practical 11)
 # Node.js 18 Alpine runtime
 # ==========================================
-FROM node:18-alpine
+FROM node:22-alpine
 
 # Set container working directory
 WORKDIR /app
